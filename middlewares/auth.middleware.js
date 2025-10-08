@@ -41,3 +41,8 @@ function tokenCheck(req, res, next) {
         next({ message: 'Invalid token' , statusCode: 401 });
     }
 }
+
+module.exports = {
+    roleCheck,
+    tokenCheck
+}
