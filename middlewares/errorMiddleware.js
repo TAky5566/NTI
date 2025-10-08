@@ -10,6 +10,6 @@ function errorHandler(err, req, res, next) {
     status: statusCode,
     message,
   });
-
+// nfdjn
 }
 export default errorHandler;
