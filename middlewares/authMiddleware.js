@@ -9,9 +9,11 @@ function authenticate(req, res, next) {
     jwt.verify(token, process.env.JWT_SECRET, (err, data) => {
         if (err) return res.status(403).json({ message: "Invalid or expired token" });
 
-        req.user = data;
+        req.user = data; // { userId, role }
         next();
     });
 }
 
 module.exports = { authenticate };
+
+

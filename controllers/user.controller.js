@@ -21,16 +21,25 @@ async function signUp(req, res) {
         name,
         email,
         password: hashedPass,
+        role: 'user',
     });
 
-    const token = generateToken(user._id);
+    const token = generateToken(user);
 
-    console.log(token);
+    const safeUser = { _id: user._id, name: user.name, email: user.email, role: user.role };
+    res.status(201).json({ message: "User Created Successfully", user: safeUser, token });
+}
 
-    res.status(201).json({
-        message: "User Created Successfully",
-        token,
-    });
+async function login(req, res) {
+    const { email, password } = req.body;
+    const user = await User.findOne({ email });
+    if (!user) return res.status(401).json({ message: "Invalid credentials" });
+
+    const ok = await bcrypt.compare(password, user.password);
+    if (!ok) return res.status(401).json({ message: "Invalid credentials" });
+
+    const token = generateToken(user);
+    res.json({ message: "Logged in", token });
 }
 
 async function getProfile(req, res) {
@@ -44,4 +53,6 @@ async function getProfile(req, res) {
     }
 }
 
-module.exports = { signUp, getProfile };
+module.exports = { signUp, login, getProfile };
+
+
