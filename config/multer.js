@@ -1,41 +1,46 @@
-import multer from 'multer';
-import path from 'path';
-import fs from 'fs';
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
 
-function uploadSet(direction, limit, ...extFilters) {
-  const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-      const userId = req.user?._id || 'unknown';
-      const uploadPath = `uploads/${direction}/${userId}`;
-      fs.mkdirSync(uploadPath, { recursive: true });
-      cb(null, uploadPath);
-    },
-    filename: function (req, file, cb) {
-      cb(null, Date.now() + '-' + file.originalname);
+const audioTypes = ['.mp3', '.m4a'];
+const imageTypes = ['.jpg', '.jpeg', '.png'];
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    const userId = req.user?._id?.toString() || 'anonymous';
+    let subFolder = 'others';
+    if (file.fieldname === 'audio') {
+      subFolder = `audio/user_${userId}`;
+    } else if (file.fieldname === 'cover') {
+      subFolder = `covers/user_${userId}`;
+    } else if (file.fieldname === 'profilePic') {
+      subFolder = `profiles/user_${userId}`;
     }
-  });
+    const folderPath = path.join('uploads', subFolder);
+    fs.mkdirSync(folderPath, { recursive: true });
+    cb(null, folderPath);
+  },
+  filename: function (req, file, cb) {
+    const ext = path.extname(file.originalname).toLowerCase();
+    const name = Date.now() + '-' + Math.round(Math.random() * 1e9) + ext;
+    cb(null, name);
+  },
+});
 
-  const Filter = function (req, file, cb) {
-    if (!extFilters.includes(path.extname(file.originalname).toLowerCase().slice(1))) {
-      return cb(new Error(`Only ${extFilters.join(', ')} files are allowed!`), false);
-    }
-    cb(null, true);
-  };
-
-  const limits = {
-    fileSize: 1024 * 1024 * limit,
-    files: 1
-  };
-
-  return multer({ storage, fileFilter: Filter, limits });
-}
-
-const uploadAudioMulter = uploadSet('audio', 50, 'mp3', 'm4a');
-const uploadCoverMulter = uploadSet('cover', 5, 'jpg', 'png');
-const profileMulter = uploadSet('profiles', 2, 'jpg', 'png');
-
-module.exports = {
-  uploadAudioMulter,
-  uploadCoverMulter,
-  profileMulter
+const fileFilter = function (req, file, cb) {
+  const ext = path.extname(file.originalname).toLowerCase();
+  if (file.fieldname === 'audio' && audioTypes.includes(ext)) {
+    return cb(null, true);
+  } else if ((file.fieldname === 'cover' || file.fieldname === 'profilePic') && imageTypes.includes(ext)) {
+    return cb(null, true);
+  }
+  cb(new Error('File type not allowed'));
 };
+
+const limits = { fileSize: 50 * 1024 * 1024 };
+
+const upload = multer({ storage, fileFilter, limits });
+
+module.exports = upload;
+
+
