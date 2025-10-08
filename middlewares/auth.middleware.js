@@ -1,4 +1,4 @@
-const jwt  = require('../utils/jwt');
+import jwt from 'jsonwebtoken'
 require('dotenv').config();
 
 
