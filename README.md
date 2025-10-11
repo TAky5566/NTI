@@ -1,13 +1,21 @@
 Audio Streaming Platform API
+
 This project is a robust Backend API built on Node.js, Express.js, and MongoDB (Mongoose). It is designed to power an audio streaming platform, with a strong focus on security, Role-Based Access Control (RBAC), and efficient content streaming.
+
 🚀 Key Features
+
 Full Authentication (JWT): Includes secure routes for user login, registration, email verification, and automatic token refresh using Refresh Tokens.
 File Uploads (Multer): Supports the upload and storage of audio files, album covers, and user profile pictures.
 Audio Streaming: Supports partial playback of audio files by correctly handling HTTP Range headers, ensuring instant and bandwidth-efficient streaming.
 Role-Based Access Control (RBAC): Dedicated private routes for administrators (Admins) to manage all system content and users.
 Uniform Error Handling: A comprehensive, centralized system for validation, custom error mapping, and global error handling.
+
 🛠️ Project Structure
+
+
 The project follows the standard MVC (Model-View-Controller) architecture to ensure separation of concerns and high maintainability:
+
+
 ├───config/               # Database configurations
 ├───controllers/          # Business Logic (Core application functions)
 │   ├───audio.Controller.js   # Audio file operations (upload, stream, delete)
